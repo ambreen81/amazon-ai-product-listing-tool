@@ -31,6 +31,8 @@ This project is part of my professional Fiverr gig — helping sellers grow thei
    pip install -r requirements.txt
 3.install the app:
 streamlit run app.py
+
+
 🎯 About the Developer
 
 I’m a Python developer specializing in Amazon automation and AI tools.
