@@ -30,6 +30,8 @@ This project is part of my professional Fiverr gig — helping sellers grow thei
    ```bash
    pip install -r requirements.txt
 3.install the app:
+
+
 streamlit run app.py
 
 
