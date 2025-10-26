@@ -6,7 +6,8 @@ api_key = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=api_key)
 
 # Create model instance
-model = genai.GenerativeModel("models/gemini-2.5-flash-preview-09-2025")
+model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+
 
 # Streamlit app layout
 st.title("Amazon Listing AI Demo")
