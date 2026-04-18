@@ -1,115 +1,89 @@
 import streamlit as st
 from openai import OpenAI
 import google.generativeai as genai
-from PIL import Image
-import io
-import base64
-import time
 
 # ---------- PAGE CONFIG ----------
-st.set_page_config(page_title="Amazon Listing AI Demo", page_icon="🛍️", layout="wide")
+st.set_page_config(page_title="Amazon AI Chatbot", page_icon="🛍️")
 
 # ---------- API KEYS ----------
 gemini_key = st.secrets.get("GEMINI_API_KEY", None)
 openai_key = st.secrets.get("OPENAI_API_KEY", None)
 
-st.sidebar.write("🔍 Debug Info:")
-st.sidebar.write("Gemini Key Loaded:", bool(gemini_key))
-st.sidebar.write("OpenAI Key Loaded:", bool(openai_key))
-
-# ---------- SIDEBAR ----------
-st.sidebar.header("⚙️ AI Provider Settings")
-if gemini_key:
-    st.sidebar.success("💡 Using Gemini API for text")
-if openai_key:
-    st.sidebar.success("💡 OpenAI API available for images")
-if not gemini_key and not openai_key:
-    st.sidebar.error("❌ No API key found. Please add one in secrets.toml.")
-
-# ---------- CONFIGURE API ----------
+# ---------- CONFIGURE APIs ----------
 if gemini_key:
     genai.configure(api_key=gemini_key)
+
 if openai_key:
     client = OpenAI(api_key=openai_key)
 
 # ---------- HEADER ----------
-st.markdown("""
-<h1 style='text-align: center; color: #FF9900;'>🛍️ Amazon Listing AI Demo</h1>
-<p style='text-align: center; font-size:18px; color:#333333;'>
-Live Amazon listing generator with AI-powered images and text.
-</p>
-""", unsafe_allow_html=True)
+st.title("🛍️ Amazon AI Chatbot Assistant")
 
-# ---------- FUNCTIONS ----------
-def generate_product_image(prompt):
-    if not openai_key:
-        return None
-    try:
-        response = client.images.generate(prompt=prompt, size="1024x1024")
-        image_base64 = response.data[0].b64_json
-        image_bytes = base64.b64decode(image_base64)
-        return Image.open(io.BytesIO(image_bytes))
-    except Exception:
-        return None
+# ---------- CHAT MEMORY ----------
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
-def generate_text(prompt):
+# ---------- DISPLAY CHAT ----------
+for msg in st.session_state.messages:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
+
+# ---------- TEXT GENERATION FUNCTION ----------
+def generate_text(user_input):
     if not gemini_key:
-        return "⚠️ Gemini API key not found. Cannot generate text."
+        return "⚠️ Gemini API key missing."
+
     try:
         model = genai.GenerativeModel("models/gemini-2.5-flash")
+
+        prompt = f"""
+You are an Amazon product research expert.
+
+User query: {user_input}
+
+Respond in this format:
+
+**Product Idea:**
+(Write a unique and profitable product idea)
+
+**Titles:**
+1. Title 1
+2. Title 2
+
+**Bullet Points:**
+- Point 1
+- Point 2
+- Point 3
+
+**Why this product?**
+(Short explanation why it can sell well)
+"""
         response = model.generate_content(prompt)
         return response.text
+
     except Exception as e:
-        return f"⚠️ Error generating text: {e}"
+        return f"Error: {e}"
 
-# ---------- MAIN LAYOUT ----------
-col1, col2 = st.columns([1, 1])
+# ---------- CHAT INPUT ----------
+user_input = st.chat_input("Ask about Amazon products...")
 
-with col1:
-    st.markdown("### ✏️ Enter Your Product Keyword")
-    keyword = st.text_input("Example: wireless mouse, yoga mat, water bottle")
-    generate_btn = st.button("✨ Generate Listing")
+if user_input:
+    # Save user message
+    st.session_state.messages.append({"role": "user", "content": user_input})
 
-with col2:
-    st.markdown("### 📦 AI Generated Output")
-    output_placeholder = st.empty()
-    image_slot = st.empty()  # placeholder for image
+    with st.chat_message("user"):
+        st.write(user_input)
 
-# ---------- LIVE GENERATION ----------
-if generate_btn:
-    if not keyword.strip():
-        st.warning("⚠️ Please enter a product keyword.")
-    else:
-        with st.spinner("Generating AI content... 🪄"):
-            time.sleep(0.5)
+    # Generate AI response
+    reply = generate_text(user_input)
 
-            # Generate text using Gemini
-            prompt_text = f"Generate 2 catchy titles, 3 bullet points, and 1 short product summary for an Amazon listing about: {keyword}."
-            result_text = generate_text(prompt_text)
+    # Show response
+    with st.chat_message("assistant"):
+        st.write(reply)
 
-            # Show image loader
-            image_slot.info("⏳ Generating product image...")
-            image_result = None
-            if openai_key:
-                image_result = generate_product_image(f"Generate a realistic Amazon-style product photo of a {keyword} on a white background.")
+    # Save response
+    st.session_state.messages.append({"role": "assistant", "content": reply})
 
-            # Display output
-            with output_placeholder.container():
-                if image_result:
-                    image_slot.image(image_result, caption="Generated by OpenAI AI", use_container_width=True)
-                else:
-                    image_slot.image("https://cdn-icons-png.flaticon.com/512/3081/3081559.png", width=180)
-
-                st.markdown(
-                    f"<div style='color:#222;padding:10px;background-color:#F9F9F9;border-radius:12px;'>{result_text}</div>",
-                    unsafe_allow_html=True
-                )
-                st.success("✅ Demo complete! Hire me for full professional Amazon listings!")
-
-# ---------- FOOTER ----------
-st.markdown("""
-<hr>
-<p style='text-align:center; color:gray;'>
-Made with ❤️ using Streamlit, Gemini AI (text) & OpenAI (images if available)
-</p>
-""", unsafe_allow_html=True)
+# ---------- CLEAR CHAT ----------
+if st.button("🗑️ Clear Chat"):
+    st.session_state.messages = []
