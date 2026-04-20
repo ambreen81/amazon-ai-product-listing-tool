@@ -6,9 +6,10 @@ import google.generativeai as genai
 st.set_page_config(page_title="Amazon AI Chatbot", page_icon="🛍️")
 
 # ---------- API KEYS ----------
-gemini_key = st.secrets.get("GEMINI_API_KEY", None)
-openai_key = st.secrets.get("OPENAI_API_KEY", None)
+import os
 
+gemini_key = os.getenv("GEMINI_API_KEY")
+openai_key = os.getenv("OPENAI_API_KEY")
 # ---------- CONFIGURE APIs ----------
 if gemini_key:
     genai.configure(api_key=gemini_key)
