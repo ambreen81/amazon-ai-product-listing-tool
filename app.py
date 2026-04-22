@@ -1,15 +1,15 @@
 import streamlit as st
 from openai import OpenAI
 import google.generativeai as genai
-
-# ---------- PAGE CONFIG ----------
-st.set_page_config(page_title="Amazon AI Chatbot", page_icon="🛍️")
-
-# ---------- API KEYS ----------
 import os
 
+# ---------- PAGE CONFIG ----------
+st.set_page_config(page_title="Amazon Product Research AI", page_icon="🛍️")
+
+# ---------- API KEYS ----------
 gemini_key = os.getenv("GEMINI_API_KEY")
 openai_key = os.getenv("OPENAI_API_KEY")
+
 # ---------- CONFIGURE APIs ----------
 if gemini_key:
     genai.configure(api_key=gemini_key)
@@ -18,7 +18,15 @@ if openai_key:
     client = OpenAI(api_key=openai_key)
 
 # ---------- HEADER ----------
-st.title("🛍️ Amazon AI Chatbot Assistant")
+st.title("🛍️ Amazon Product Research AI Assistant")
+st.write("Find profitable Amazon products, generate titles, and bullet points instantly.")
+
+st.info("🚀 This AI tool helps Amazon sellers find winning products and create listings in seconds.")
+
+st.markdown("### 💡 Try these:")
+st.markdown("- Suggest a profitable Amazon product")
+st.markdown("- Give product idea in kitchen niche")
+st.markdown("- Create listing for water bottle")
 
 # ---------- CHAT MEMORY ----------
 if "messages" not in st.session_state:
@@ -69,20 +77,17 @@ Respond in this format:
 user_input = st.chat_input("Ask about Amazon products...")
 
 if user_input:
-    # Save user message
     st.session_state.messages.append({"role": "user", "content": user_input})
 
     with st.chat_message("user"):
         st.write(user_input)
 
-    # Generate AI response
-    reply = generate_text(user_input)
+    with st.spinner("Generating..."):
+        reply = generate_text(user_input)
 
-    # Show response
     with st.chat_message("assistant"):
         st.write(reply)
 
-    # Save response
     st.session_state.messages.append({"role": "assistant", "content": reply})
 
 # ---------- CLEAR CHAT ----------
