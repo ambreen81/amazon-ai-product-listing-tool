@@ -1,6 +1,12 @@
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = false
+port = 8501
+
 [theme]
-primaryColor = "#A020F0"               # Bright purple (for buttons and highlights)
-backgroundColor = "#1E1E1E"            # Dark background
-secondaryBackgroundColor = "#2B2B35"   # Slightly lighter gray (for boxes/sections)
-textColor = "#C5C6C7"                  # Light gray text
-font = "sans serif"                    # Clean modern font
+primaryColor = "#A020F0"
+backgroundColor = "#1E1E1E"
+secondaryBackgroundColor = "#2B2B35"
+textColor = "#C5C6C7"
+font = "sans serif"
