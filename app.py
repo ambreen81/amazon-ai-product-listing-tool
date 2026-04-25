@@ -43,7 +43,7 @@ def generate_text(user_input):
         return "⚠️ Gemini API key missing."
 
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-1.5-pro")
 
         prompt = f"""
 You are an Amazon product research expert.
