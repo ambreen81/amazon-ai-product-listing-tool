@@ -43,7 +43,7 @@ def generate_text(user_input):
         return "⚠️ Gemini API key missing."
 
     try:
-       model = genai.GenerativeModel("models/text-bison-001")
+        model = genai.GenerativeModel("models/text-bison-001")
 
         prompt = f"""
 You are an Amazon product research expert.
@@ -67,12 +67,12 @@ Respond in this format:
 **Why this product?**
 (Short explanation why it can sell well)
 """
+
         response = model.generate_content(prompt)
         return response.text
 
     except Exception as e:
         return f"Error: {e}"
-
 # ---------- CHAT INPUT ----------
 user_input = st.chat_input("Ask about Amazon products...")
 
