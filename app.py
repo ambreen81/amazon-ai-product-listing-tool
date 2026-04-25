@@ -39,37 +39,38 @@ for msg in st.session_state.messages:
 
 # ---------- TEXT GENERATION FUNCTION ----------
 def generate_text(user_input):
-    if not gemini_key:
-        return "⚠️ Gemini API key missing."
+    if not openai_key:
+        return "⚠️ OpenAI API key missing."
 
     try:
-        model = genai.GenerativeModel("models/text-bison-001")
-
-        prompt = f"""
-You are an Amazon product research expert.
-
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are an Amazon product research expert."},
+                {"role": "user", "content": f"""
 User query: {user_input}
 
 Respond in this format:
 
-**Product Idea:**
+Product Idea:
 (Write a unique and profitable product idea)
 
-**Titles:**
+Titles:
 1. Title 1
 2. Title 2
 
-**Bullet Points:**
+Bullet Points:
 - Point 1
 - Point 2
 - Point 3
 
-**Why this product?**
+Why this product?
 (Short explanation why it can sell well)
-"""
+"""}
+            ]
+        )
 
-        response = model.generate_content(prompt)
-        return response.text
+        return response.choices[0].message.content
 
     except Exception as e:
         return f"Error: {e}"
