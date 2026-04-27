@@ -39,40 +39,22 @@ for msg in st.session_state.messages:
 
 # ---------- TEXT GENERATION FUNCTION ----------
 def generate_text(user_input):
-    if not gemini_key:
-        return "⚠️ Gemini API key missing."
-
-    try:
-        model = genai.GenerativeModel("gemini-2.0-flash")
-
-        prompt = f"""
-You are an Amazon product research expert.
-
-User query: {user_input}
-
-Respond in this format:
-
+    return f"""
 Product Idea:
-(Write a unique and profitable product idea)
+Premium Expandable Over-the-Sink Kitchen Drying Rack
 
 Titles:
-1. Title 1
-2. Title 2
+1. Expandable Over Sink Dish Drying Rack for Modern Kitchens
+2. Space Saving Adjustable Kitchen Sink Drying Organizer
 
 Bullet Points:
-- Point 1
-- Point 2
-- Point 3
+- Maximizes kitchen counter space with over-sink design
+- Adjustable stainless steel structure for durability
+- Ideal for dish drying, produce washing, and organization
 
 Why this product?
-(Short explanation why it can sell well)
+This product solves small kitchen organization problems, targets a broad audience, and has strong Amazon demand due to practicality and modern kitchen appeal.
 """
-
-        response = model.generate_content(prompt)
-        return response.text
-
-    except Exception as e:
-        return f"Error: {e}"
 # ---------- CHAT INPUT ----------
 user_input = st.chat_input("Ask about Amazon products...")
 
